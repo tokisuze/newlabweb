@@ -165,71 +165,7 @@
             background: #5568d3;
         }
 
-        .game-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .game-modal.active {
-            display: flex;
-        }
-
-        .game-container {
-            width: 95%;
-            height: 95%;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .game-header {
-            background: #667eea;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .game-header h2 {
-            font-size: 1.5em;
-        }
-
-        .close-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 24px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .game-frame {
-            flex: 1;
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-
-        .no-games {
+None.no-games {
             text-align: center;
             padding: 60px 20px;
             color: white;
@@ -267,16 +203,6 @@
         <div class="games-grid" id="gamesGrid"></div>
     </div>
 
-    <div class="game-modal" id="gameModal">
-        <div class="game-container">
-            <div class="game-header">
-                <h2 id="currentGameTitle"></h2>
-                <button class="close-btn" id="closeBtn">×</button>
-            </div>
-            <iframe class="game-frame" id="gameFrame" src=""></iframe>
-        </div>
-    </div>
-
     <script>
         // ЗДЕСЬ ВЫ ДОБАВЛЯЕТЕ СВОИ ИГРЫ
         // Для каждой игры укажите:
@@ -292,12 +218,12 @@
             // ПРИМЕР 1: Игра с emoji иконкой
              {
                  id: 1,
-                 title: "Undertale",
+              title: "Название игры 1",
                  description: "Описание вашей игры",
-                 category: "adventure",
+                 category: "action",
                  icon: "🎯",
                  path: "games/undertale/index.html"
-             },
+            // },
             
             // ПРИМЕР 2: Игра с изображением-превью
             // {
@@ -324,10 +250,6 @@
         let searchQuery = '';
 
         const gamesGrid = document.getElementById('gamesGrid');
-        const gameModal = document.getElementById('gameModal');
-        const gameFrame = document.getElementById('gameFrame');
-        const currentGameTitle = document.getElementById('currentGameTitle');
-        const closeBtn = document.getElementById('closeBtn');
         const searchInput = document.getElementById('searchInput');
         const categoryBtns = document.querySelectorAll('.category-btn');
 
@@ -351,11 +273,10 @@
             }
 
             gamesGrid.innerHTML = filteredGames.map(game => {
-                const thumbnailContent = game.thumbnail 
-                    ? `<img src="${game.thumbnail}" alt="${game.title}">`
-                    : `<span>${game.icon || '🎮'}</span>`;
+                const thumbnailContent = game.thumbnail? <img src="${game.thumbnail}" alt="${game.title}">
+                    : <span>${game.icon || '🎮'}</span>;
                 
-                return `
+                return 
                     <div class="game-card" onclick="playGame(${game.id})">
                         <div class="game-thumbnail">
                             ${thumbnailContent}
@@ -369,7 +290,7 @@
                             </div>
                         </div>
                     </div>
-                `;
+                ;
             }).join('');
         }
 
@@ -387,24 +308,10 @@
         function playGame(id) {
             const game = games.find(g => g.id === id);
             if (game) {
-                currentGameTitle.textContent = game.title;
-                gameFrame.src = game.path;
-                gameModal.classList.add('active');
+                // Открываем игру на отдельной странице
+                window.open(game.path, '_blank');
             }
         }
-
-        function closeGame() {
-            gameModal.classList.remove('active');
-            gameFrame.src = '';
-        }
-
-        closeBtn.addEventListener('click', closeGame);
-
-        gameModal.addEventListener('click', (e) => {
-            if (e.target === gameModal) {
-                closeGame();
-            }
-        });
 
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -418,13 +325,6 @@
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
             renderGames();
-        });
-
-        // Закрытие игры по нажатию ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && gameModal.classList.contains('active')) {
-                closeGame();
-            }
         });
 
         renderGames();
