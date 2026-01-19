@@ -273,8 +273,8 @@ None.no-games {
             }
 
             gamesGrid.innerHTML = filteredGames.map(game => {
-                const thumbnailContent = game.thumbnail? <img src="${game.thumbnail}" alt="${game.title}">
-                    : <span>${game.icon || '🎮'}</span>;
+                const thumbnailContent = game.thumbnail? '<img src="${game.thumbnail}" alt="${game.title}">'
+                    : '<span>${game.icon || '🎮'}</span>';
                 
                 return 
                     <div class="game-card" onclick="playGame(${game.id})">
