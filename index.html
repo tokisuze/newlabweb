@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровая платформа</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .game-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .play-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .play-btn:hover {
+            background: #5568d3;
+        }
+
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-modal.active {
+            display: flex;
+        }
+
+        .game-container {
+            width: 95%;
+            height: 95%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-header h2 {
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .game-frame {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .no-games {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Игровая платформа</h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск игр...">
+            </div>
+            <div class="categories">
+                <button class="category-btn active" data-category="all">Все игры</button>
+                <button class="category-btn" data-category="action">Экшен</button>
+                <button class="category-btn" data-category="puzzle">Головоломки</button>
+                <button class="category-btn" data-category="arcade">Аркады</button>
+                <button class="category-btn" data-category="strategy">Стратегии</button>
+                <button class="category-btn" data-category="racing">Гонки</button>
+            </div>
+        </header>
+
+        <div class="games-grid" id="gamesGrid"></div>
+    </div>
+
+    <div class="game-modal" id="gameModal">
+        <div class="game-container">
+            <div class="game-header">
+                <h2 id="currentGameTitle"></h2>
+                <button class="close-btn" id="closeBtn">×</button>
+            </div>
+            <iframe class="game-frame" id="gameFrame" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        // ЗДЕСЬ ВЫ ДОБАВЛЯЕТЕ СВОИ ИГРЫ
+        // Для каждой игры укажите:
+        // - id: уникальный идентификатор
+        // - title: название игры
+        // - description: описание
+        // - category: категория (action, puzzle, arcade, strategy, racing)
+        // - icon: emoji или путь к иконке
+        // - thumbnail: путь к изображению-превью (необязательно)
+        // - path: путь к HTML файлу игры
+        
+        const games = [
+            // ПРИМЕР 1: Игра с emoji иконкой
+            // {
+            //     id: 1,
+            //     title: "Название игры 1",
+            //     description: "Описание вашей игры",
+            //     category: "action",
+            //     icon: "🎯",
+            //     path: "games/game1/index.html"
+            // },
+            
+            // ПРИМЕР 2: Игра с изображением-превью
+            // {
+            //     id: 2,
+            //     title: "Название игры 2",
+            //     description: "Еще одна игра",
+            //     category: "puzzle",
+            //     thumbnail: "games/game2/preview.jpg",
+            //     path: "games/game2/index.html"
+            // },
+            
+            // ПРИМЕР 3: Больше игр
+            // {
+            //     id: 3,
+            //     title: "Гонки",
+            //     description: "Быстрая гоночная игра",
+            //     category: "racing",
+            //     icon: "🏎️",
+            //     path: "games/racing/index.html"
+            // }
+        ];
+
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        const gamesGrid = document.getElementById('gamesGrid');
+        const gameModal = document.getElementById('gameModal');
+        const gameFrame = document.getElementById('gameFrame');
+        const currentGameTitle = document.getElementById('currentGameTitle');
+        const closeBtn = document.getElementById('closeBtn');
+        const searchInput = document.getElementById('searchInput');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+
+        function renderGames() {
+            let filteredGames = games;
+
+            if (currentCategory !== 'all') {
+                filteredGames = filteredGames.filter(g => g.category === currentCategory);
+            }
+
+            if (searchQuery) {
+                filteredGames = filteredGames.filter(g => 
+                    g.title.toLowerCase().includes(searchQuery) ||
+                    g.description.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            if (filteredGames.length === 0) {
+                gamesGrid.innerHTML = '<div class="no-games"><p>Игры не найдены</p></div>';
+                return;
+            }
+
+            gamesGrid.innerHTML = filteredGames.map(game => {
+                const thumbnailContent = game.thumbnail 
+                    ? `<img src="${game.thumbnail}" alt="${game.title}">`
+                    : `<span>${game.icon || '🎮'}</span>`;
+                
+                return `
+                    <div class="game-card" onclick="playGame(${game.id})">
+                        <div class="game-thumbnail">
+                            ${thumbnailContent}
+                        </div>
+                        <div class="game-info">
+                            <div class="game-title">${game.title}</div>
+                            <div class="game-description">${game.description}</div>
+                            <div class="game-meta">
+                                <span>${getCategoryName(game.category)}</span>
+                                <button class="play-btn" onclick="event.stopPropagation(); playGame(${game.id})">Играть</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                action: '⚔️ Экшен',
+                puzzle: '🧩 Головоломка',
+                arcade: '🕹️ Аркада',
+                strategy: '🎲 Стратегия',
+                racing: '🏁 Гонки'
+            };
+            return names[category] || '🎮 Игра';
+        }
+
+        function playGame(id) {
+            const game = games.find(g => g.id === id);
+            if (game) {
+                currentGameTitle.textContent = game.title;
+                gameFrame.src = game.path;
+                gameModal.classList.add('active');
+            }
+        }
+
+        function closeGame() {
+            gameModal.classList.remove('active');
+            gameFrame.src = '';
+        }
+
+        closeBtn.addEventListener('click', closeGame);
+
+        gameModal.addEventListener('click', (e) => {
+            if (e.target === gameModal) {
+                closeGame();
+            }
+        });
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderGames();
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            renderGames();
+        });
+
+        // Закрытие игры по нажатию ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && gameModal.classList.contains('active')) {
+                closeGame();
+            }
+        });
+
+        renderGames();
+    </script>
+</body>
+</html>
